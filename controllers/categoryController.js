@@ -1,4 +1,4 @@
-const CategoryModel = require('../models/category-model')
+const Category = require('../models/category-model')
 const slugify = require('slugify')
 const asyncHandler = require('express-async-handler')
 
@@ -9,7 +9,7 @@ exports.getCategories = asyncHandler(async(req, res)=>{
     const page = req.query.page * 1 || 1
     const limit = req.query.limit * 1 || 5
     const skip = (page -1) * limit
-    const categories = await CategoryModel.find({}).skip(skip).limit(limit)
+    const categories = await Category.find({}).skip(skip).limit(limit)
     res.status(200).json({results: categories.length, page, data: categories})
 })
 
@@ -18,9 +18,9 @@ exports.getCategories = asyncHandler(async(req, res)=>{
 // @access Public
 exports.getCategory = asyncHandler(async(req, res)=> {
     const {id} = req.params
-    const category = await CategoryModel.findById(id)
+    const category = await Category.findById(id)
     if(!category){
-        res.status(404).json({msg: `No category for this ${id}`})
+        return res.status(404).json({msg: `No category for this ${id}`})
     }
     res.status(200).json({data: category})
 })
@@ -30,7 +30,7 @@ exports.getCategory = asyncHandler(async(req, res)=> {
 // @access Private
 exports.createCategory = asyncHandler(async(req, res) => {
     const name = req.body.name
-    const category = await CategoryModel.create({
+    const category = await Category.create({
         name,
         slug: slugify(name)
         })
@@ -39,4 +39,17 @@ exports.createCategory = asyncHandler(async(req, res) => {
     
     // .catch(err => res.status(400).send(err))
     
+})
+
+// @desc update specific category
+// @routes PUT /api/v1/categories/:id
+// @access Private
+exports.updateCategory = asyncHandler(async(req, res)=> {
+    const {id} = req.params
+    const {name} = req.body
+    const category = await Category.findOneAndUpdate({_id: id}, {name, slug: slugify(name)}, {new: true})
+    if(!category){
+        return res.status(404).json({msg: `did not find the category of id: ${id}`})
+    }
+    res.status(200).json({data: category})
 })
