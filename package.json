@@ -1,0 +1,30 @@
+{
+  "name": "e-commerce-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alaamaghraby149/nodejs-ecommerce-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/alaamaghraby149/nodejs-ecommerce-api/issues"
+  },
+  "homepage": "https://github.com/alaamaghraby149/nodejs-ecommerce-api#readme",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "express-async-handler": "^1.2.0",
+    "mongoose": "^9.12.1",
+    "morgan": "^1.12.1",
+    "slugify": "^1.6.9"
+  }
+}
