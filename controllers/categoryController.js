@@ -1,6 +1,7 @@
 const Category = require('../models/category-model')
 const slugify = require('slugify')
 const asyncHandler = require('express-async-handler')
+const ApiError = require('../utils/api-error')
 
 // @desc GET list of category
 // @routes GET /api/v1/categories
@@ -16,11 +17,12 @@ exports.getCategories = asyncHandler(async(req, res)=>{
 // @desc GET specific category
 // @routes GET /api/v1/categories/:id
 // @access Public
-exports.getCategory = asyncHandler(async(req, res)=> {
+exports.getCategory = asyncHandler(async(req, res, next)=> {
     const {id} = req.params
     const category = await Category.findById(id)
     if(!category){
-        return res.status(404).json({msg: `No category for this ${id}`})
+        // return res.status(404).json({msg: `No category for this ${id}`})
+        return next(new ApiError(`No category for this ${id}`, 404))
     }
     res.status(200).json({data: category})
 })
@@ -28,7 +30,7 @@ exports.getCategory = asyncHandler(async(req, res)=> {
 // @desc create category
 // @routes POST /api/v1/categories
 // @access Private
-exports.createCategory = asyncHandler(async(req, res) => {
+exports.createCategory = asyncHandler(async(req, res, next) => {
     const name = req.body.name
     const category = await Category.create({
         name,
@@ -44,12 +46,12 @@ exports.createCategory = asyncHandler(async(req, res) => {
 // @desc update specific category
 // @routes PUT /api/v1/categories/:id
 // @access Private
-exports.updateCategory = asyncHandler(async(req, res)=> {
+exports.updateCategory = asyncHandler(async(req, res, next)=> {
     const {id} = req.params
     const {name} = req.body
     const category = await Category.findOneAndUpdate({_id: id}, {name, slug: slugify(name)}, {new: true})
     if(!category){
-        return res.status(404).json({msg: `did not find the category of id: ${id}`})
+        return next(new ApiError(`No category for this ${id}`, 404))
     }
     res.status(200).json({data: category})
 })
@@ -57,12 +59,12 @@ exports.updateCategory = asyncHandler(async(req, res)=> {
 // @desc delete specific category
 // @routes DELETE /api/v1/categories/:id
 // @access Private
-exports.deleteCategory = asyncHandler(async(req, res)=> {
+exports.deleteCategory = asyncHandler(async(req, res, next)=> {
     const {id} = req.params
     // const {name} = req.body
     const category = await Category.findOneAndDelete({_id: id})
     if(!category){
-        return res.status(404).json({msg: `did not find the category of id: ${id}`})
+        return next(new ApiError(`No category for this ${id}`, 404))
     }
     res.status(200).json({data: category})
 })
