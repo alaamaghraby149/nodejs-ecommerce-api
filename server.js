@@ -3,6 +3,8 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 dotenv.config({ path: "config.env" });
+const errorMiddleware = require('./middlewares/errorMiddileware')
+const ApiError = require('./utils/api-error')
 const dbConnection = require("./config/database");
 const categoryRoutes = require("./routes/category-route");
 
@@ -39,14 +41,13 @@ app.use("/api/v1/categories", categoryRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
-  const error = new Error(`Can not find this route: ${req.originalUrl}`);
-  next(error.message);
+//   const error = new Error(`Can not find this route: ${req.originalUrl}`);
+//   next(error.message);
+    next(new ApiError(`Can not find this route: ${req.originalUrl}`, 400))
 });
 
 // Global error handling middleware
-app.use((err, req, res, next) => {
-  res.status(404).json({ err });
-});
+app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
