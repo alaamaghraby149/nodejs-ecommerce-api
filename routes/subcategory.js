@@ -1,7 +1,7 @@
 const express = require('express')
 const {param, validationResult} = require('express-validator')
 const router = express.Router({ mergeParams: true })
-const {createSubcategoryValidator, getSubcategoryValidator, updateSubcategoryValidator, deleteSubcategoryValidator} = require('../utils/validator/subcategoryValidator copy')
+const {createSubcategoryValidator, getSubcategoryValidator, updateSubcategoryValidator, deleteSubcategoryValidator} = require('../utils/validator/subcategoryValidator')
 const subcategoryController = require('../controllers/subCategoryController')
 
 router.route('/')

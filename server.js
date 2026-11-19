@@ -8,6 +8,7 @@ const ApiError = require('./utils/api-error')
 const dbConnection = require("./config/database");
 const categoryRoutes = require("./routes/category-route");
 const subcategoryRoutes = require('./routes/subcategory')
+const brandRoutes = require('./routes/brand-route')
 // express app
 const app = express();
 
@@ -32,6 +33,7 @@ app.get("/", (req, res, next) => {
 
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/subcategories", subcategoryRoutes);
+app.use("/api/v1/brands", brandRoutes);
 // Wild card, it's need at least one char after / like(localhost:8000/w)
 // app.all('/*path', (req, res, next)=>{
 //     // Create error and send it to error handling middleware
