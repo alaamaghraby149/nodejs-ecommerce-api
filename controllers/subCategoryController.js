@@ -2,7 +2,10 @@ const Subcategory = require('../models/subcategory-model')
 const slugify = require('slugify')
 const asyncHandler = require('express-async-handler')
 const ApiError = require('../utils/api-error')
-
+exports.setCategoryIdToBody = (req, res, next) => {
+    if(!req.body.category) req.body.category = req.params.categoryId
+    next()
+}
 exports.createSubcategory = asyncHandler(async(req, res, next) => {
     const {name, category} = req.body
     const subcategory = await Subcategory.create({
@@ -14,11 +17,19 @@ exports.createSubcategory = asyncHandler(async(req, res, next) => {
     // .catch(err => res.status(400).send(err))
 })
 
+exports.createFilterObject = (req, res, next) => {
+    let filterObject = {}
+    if(req.params.categoryId) filterObject = {category: req.params.categoryId}
+    req.filterObject = filterObject
+    next()
+}
+
 exports.getSubcategories = asyncHandler(async(req, res)=>{
     const page = req.query.page * 1 || 1
     const limit = req.query.limit * 1 || 5
     const skip = (page -1) * limit
-    const subcategories = await Subcategory.find({})
+
+    const subcategories = await Subcategory.find(req.filterObject)
     .skip(skip).limit(limit)
     // .populate({path: 'category', select: 'name -_id)'})
     res.status(200).json({results: subcategories.length, page, data: subcategories})

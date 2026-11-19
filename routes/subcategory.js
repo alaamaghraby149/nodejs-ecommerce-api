@@ -1,12 +1,12 @@
 const express = require('express')
 const {param, validationResult} = require('express-validator')
-const router = express.Router()
+const router = express.Router({ mergeParams: true })
 const {createSubcategoryValidator, getSubcategoryValidator, updateSubcategoryValidator, deleteSubcategoryValidator} = require('../utils/validator/subcategoryValidator copy')
 const subcategoryController = require('../controllers/subCategoryController')
 
 router.route('/')
-    .post(createSubcategoryValidator, subcategoryController.createSubcategory)
-    .get(subcategoryController.getSubcategories)
+    .post(subcategoryController.setCategoryIdToBody, createSubcategoryValidator, subcategoryController.createSubcategory)
+    .get(subcategoryController.createFilterObject, subcategoryController.getSubcategories)
 
 
 router.route('/:id')
