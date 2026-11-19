@@ -31,16 +31,13 @@ exports.getCategory = asyncHandler(async(req, res, next)=> {
 // @routes POST /api/v1/categories
 // @access Private
 exports.createCategory = asyncHandler(async(req, res, next) => {
-    const name = req.body.name
+    const {name} = req.body
     const category = await Category.create({
         name,
         slug: slugify(name)
         })
         res.status(201).json({data: category})
-
-    
     // .catch(err => res.status(400).send(err))
-    
 })
 
 // @desc update specific category

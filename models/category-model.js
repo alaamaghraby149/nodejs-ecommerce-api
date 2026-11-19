@@ -17,7 +17,7 @@ const CategorySchema = new mongoose.Schema({
     image: String
 }, {timestamps: true})
 
-// 1-create model
-const CategoryModel = mongoose.model("category", CategorySchema)
+
+const CategoryModel = mongoose.model("Category", CategorySchema)
 
 module.exports = CategoryModel
