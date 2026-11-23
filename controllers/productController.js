@@ -7,13 +7,13 @@ exports.getProducts = asyncHandler(async(req, res)=>{
     const page = req.query.page * 1 || 1
     const limit = req.query.limit * 1 || 5
     const skip = (page -1) * limit
-    const products = await Product.find({}).skip(skip).limit(limit)
+    const products = await Product.find({}).skip(skip).limit(limit).populate({path:"category", select: 'name' })
     res.status(200).json({results: products.length, page, data: products})
 })
 
 exports.getProduct = asyncHandler(async(req, res, next)=> {
     const {id} = req.params
-    const product = await Product.findById(id)
+    const product = await Product.findById(id).populate({path:"category", select: 'name' })
     if(!product){
         // return res.status(404).json({msg: `No product for this ${id}`})
         return next(new ApiError(`No product for this ${id}`, 404))
@@ -29,7 +29,10 @@ exports.createProduct = asyncHandler(async(req, res, next) => {
 })
 
 exports.updateProduct = asyncHandler(async(req, res, next)=> {
-    req.body.slug = slugify(req.body.title)
+    const { id } = req.params
+    if(req.body.title){
+        req.body.slug = slugify(req.body.title)
+    }
     const product = await Product.findOneAndUpdate({_id: id}, req.body, {new: true})
     if(!product){
         return next(new ApiError(`No product for this ${id}`, 404))

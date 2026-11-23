@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 
-const ProductSchema = new mongoose({
+const ProductSchema = new mongoose.Schema({
     title: {
         type: String, 
         required: true,
         trim: true,
         minLength: [3, 'Too short product title'],
-        maxLength: [50, 'Too long product title']
+        maxLength: [150, 'Too long product title']
     },
     slug: {
         type: String, 
@@ -30,7 +30,7 @@ const ProductSchema = new mongoose({
         type: Number,
         required: true,
         trim: true,
-        max: [15, 'Too long price for product']
+        max: [200000000000, 'Too long price for product']
     },
     priceAfterDiscount: {
         type: Number,
