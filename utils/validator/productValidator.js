@@ -7,8 +7,11 @@ const SubCategory = require("../../models/subcategory-model");
 exports.createProductValidator = [
     check("title")
         .notEmpty().withMessage("Product title is required")
-        .isLength({ min: 3 }).withMessage("Title must be at least 3 chars"),
-
+        .isLength({ min: 3 }).withMessage("Title must be at least 3 chars")
+    .custom((val, {req})=>{
+            req.body.slug = slugify(val)
+            return true
+        }),
     check("description")
         .notEmpty().withMessage("Product description is required")
         .isLength({ max: 2000 }).withMessage("Too long description"),
@@ -97,7 +100,6 @@ exports.createProductValidator = [
     check("ratingsQuantity")
         .optional()
         .isNumeric().withMessage("ratingsQuantity must be a number"),
-
     validatorMiddleware,
 ];
 
@@ -113,6 +115,10 @@ exports.updateProductValidator = [
         .custom((val, { req }) => {
             req.body.slug = slugify(val);
             return true;
+        }),
+    body('title').custom((val, {req})=>{
+            req.body.slug = slugify(val)
+            return true
         }),
     validatorMiddleware,
 ];

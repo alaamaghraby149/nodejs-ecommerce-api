@@ -1,61 +1,13 @@
 const Brand = require('../models/brand-model')
-const slugify = require('slugify')
-const asyncHandler = require('express-async-handler')
-const ApiError = require('../utils/api-error')
-const ApiFeatures = require('../utils/api-features')
+const factory = require('./handlersFactory')
 
-exports.getBrands = asyncHandler(async(req, res)=>{
-    // Build query
-    const documentCounts = await Brand.countDocuments()
-    const apiFeatures = new ApiFeatures(Brand.find(), req.query)
-            .paginate(documentCounts)
-            .filter()
-            .search()
-            .limitFields()
-            .sort()
+exports.getBrands = factory.getAll(Brand)
 
-    // Execute query
-    const {mongooseQuery, paginationResult} = apiFeatures
-    const brands = await mongooseQuery
-    res.status(200).json({results: brands.length, paginationResult, data: brands})
-})
+exports.getBrand = factory.getOne(Brand)
 
-exports.getBrand = asyncHandler(async(req, res, next)=> {
-    const {id} = req.params
-    const brand = await Brand.findById(id)
-    if(!brand){
-        // return res.status(404).json({msg: `No brand for this ${id}`})
-        return next(new ApiError(`No brand for this ${id}`, 404))
-    }
-    res.status(200).json({data: brand})
-})
+exports.createBrand = factory.createOne(Brand)
 
-exports.createBrand = asyncHandler(async(req, res, next) => {
-    const {name} = req.body
-    const brand = await Brand.create({
-        name,
-        slug: slugify(name)
-        })
-        res.status(201).json({data: brand})
-    // .catch(err => res.status(400).send(err))
-})
+exports.updateBrand = factory.updateOne(Brand)
 
-exports.updateBrand = asyncHandler(async(req, res, next)=> {
-    const {id} = req.params
-    const {name} = req.body
-    const brand = await Brand.findOneAndUpdate({_id: id}, {name, slug: slugify(name)}, {new: true})
-    if(!brand){
-        return next(new ApiError(`No brand for this ${id}`, 404))
-    }
-    res.status(200).json({data: brand})
-})
+exports.deleteBrand = factory.deleteOne(Brand)
 
-exports.deleteBrand = asyncHandler(async(req, res, next)=> {
-    const {id} = req.params
-    // const {name} = req.body
-    const brand = await Brand.findOneAndDelete({_id: id})
-    if(!brand){
-        return next(new ApiError(`No brand for this ${id}`, 404))
-    }
-    res.status(200).json({data: brand})
-})
