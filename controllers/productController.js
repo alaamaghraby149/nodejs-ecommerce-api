@@ -3,32 +3,19 @@ const slugify = require('slugify')
 const asyncHandler = require('express-async-handler')
 const ApiError = require('../utils/api-error')
 const Category = require('../models/category-model')
-
+const ApiFeatures = require('../utils/api-features')
 exports.getProducts = asyncHandler(async(req, res)=>{
-    // Filtering
-    const queryStringObject = {...req.query}
-    const excludesFields = ['page', 'sort', 'limit', 'fields']
-    excludesFields.forEach((field)=> delete queryStringObject[field])
-
-    // Pagination
-    const page = req.query.page * 1 || 1
-    const limit = req.query.limit * 1 || 50
-    const skip = (page -1) * limit
-
-    // Apply filtration using [gte, gt, lte, lt]
-    let queryString = JSON.stringify(queryStringObject)
-    queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, match=>`$${match}`)
-
     // Build query
-    const mongooseQuery = Product.find(JSON.parse(queryString))
-        // .where('price').equals(req.query.price)
-        // .where('ratingsAverage').equals(req.query.ratingsAverage)
-            .skip(skip)
-            .limit(limit).populate({path:"category", select: 'name' })
+    const apiFeatures = new ApiFeatures(Product.find(), req.query)
+        .paginate()
+        .filter()
+        .search()
+        .limitFields()
+        .sort()
     
     // Execute query
-    const products = await mongooseQuery
-    res.status(200).json({results: products.length, page, data: products})
+    const products = await apiFeatures.mongooseQuery
+    res.status(200).json({results: products.length, data: products})
 })
 
 exports.getProduct = asyncHandler(async(req, res, next)=> {
