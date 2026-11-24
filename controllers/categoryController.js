@@ -2,16 +2,24 @@ const Category = require('../models/category-model')
 const slugify = require('slugify')
 const asyncHandler = require('express-async-handler')
 const ApiError = require('../utils/api-error')
-
+const ApiFeatures = require('../utils/api-features')
 // @desc GET list of category
 // @routes GET /api/v1/categories
 // @access public
 exports.getCategories = asyncHandler(async(req, res)=>{
-    const page = req.query.page * 1 || 1
-    const limit = req.query.limit * 1 || 5
-    const skip = (page -1) * limit
-    const categories = await Category.find({}).skip(skip).limit(limit)
-    res.status(200).json({results: categories.length, page, data: categories})
+    // Build query
+    const documentCounts = await Category.countDocuments()
+    const apiFeatures = new ApiFeatures(Category.find(), req.query)
+            .paginate(documentCounts)
+            .filter()
+            .search()
+            .limitFields()
+            .sort()
+
+    // Execute query
+    const {mongooseQuery, paginationResult} = apiFeatures
+    const categories = await mongooseQuery
+    res.status(200).json({results: categories.length, paginationResult, data: categories})
 })
 
 // @desc GET specific category

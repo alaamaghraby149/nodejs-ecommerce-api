@@ -2,7 +2,6 @@ const Product = require('../models/product-model')
 const slugify = require('slugify')
 const asyncHandler = require('express-async-handler')
 const ApiError = require('../utils/api-error')
-const Category = require('../models/category-model')
 const ApiFeatures = require('../utils/api-features')
 exports.getProducts = asyncHandler(async(req, res)=>{
     // Build query
@@ -10,7 +9,7 @@ exports.getProducts = asyncHandler(async(req, res)=>{
     const apiFeatures = new ApiFeatures(Product.find(), req.query)
         .paginate(documentCounts)
         .filter()
-        .search()
+        .search('Products')
         .limitFields()
         .sort()
     

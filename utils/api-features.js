@@ -35,13 +35,18 @@ class ApiFeatures{
         return this 
     }
 
-    search(){
+    search(modelName){
         if(this.queryString.keyword){
-            const query = {}
-            query.$or = [
-                {title: {$regex: this.queryString.keyword, $options: 'i'}},
-                {description: {$regex: this.queryString.keyword, $options: 'i'}}
-            ]
+            let query = {}
+            if(modelName === 'Products'){
+                query.$or = [
+                    {title: {$regex: this.queryString.keyword, $options: 'i'}},
+                    {description: {$regex: this.queryString.keyword, $options: 'i'}}
+                ]
+            }else{
+                query.$or = [
+                    {name: {$regex: this.queryString.keyword, $options: 'i'}}                ]
+            }
             this.mongooseQuery = this.mongooseQuery.find(query)
         }
         return this 
@@ -66,7 +71,8 @@ class ApiFeatures{
         }
         this.mongooseQuery = this.mongooseQuery
             .skip(skip)
-            .limit(limit).populate({path:"category", select: 'name' })
+            .limit(limit)
+                // .populate({path:"category", select: 'name' })
         this.paginationResult = pagination
         return this
     }
