@@ -12,7 +12,7 @@ const brandRoutes = require('./routes/brand-route')
 const productRoutes = require('./routes/product-route')
 // express app
 const app = express();
-
+app.set('query parser', 'extended')
 // connect with db
 dbConnection();
 
